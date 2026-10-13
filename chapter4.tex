@@ -1,0 +1,23 @@
+\chapter{Conclusion}
+\label{cha:discussion}
+
+\section{Conclusions and Limitations}
+\label{sec:discussion-conclusion}
+
+NcHL can produce competitive behaviour relative to Static-ES on most tasks that the tested controllers learn recognizably. Both representations produce natural locomotion and structured throwing in the original study; the extension produces partial continuous-support locomotion and object interaction, as well as adequate DownStepper behaviour. Static-ES remains more reliable and is clearly stronger in some conditions.
+
+NcHL's online updates are also meaningful: plastic control usually improves on the random initial network, and Walker acquires reusable weights. However, the rules remain sensitive to initialization and do not generally converge towards one progressively better fixed controller. 
+
+No general task characteristic reliably predicts good NcHL performance. None of the four predefined groups produces an aggregate advantage, while CaveCrawler and all three whole-body dynamic tasks remain too poorly learned for their scores to establish controller capability. Morphology dependence is much clearer: most informative positive cells use the compact crawler in partially learned locomotion and object-interaction tasks. The evidence therefore supports task--body compatibility, not a morphology-independent distinction such as cyclical versus non-cyclical control.
+
+The conclusions are limited to simulation, twelve selected tasks, and three hand-designed bodies. The methods differ in genome size and candidate episode budget, so the comparison is not compute-matched. Results may also depend on the bias-free tanh architecture, ES1, and unbounded update. Fresh-start freezing may underestimate phase-specific weight value. Transfer to physical robots, modelling error, and damage remain untested.
+
+\section{Future Work}
+\label{sec:discussion-future}
+
+Two interesting approaches could investigate the observed dependence on morphology. The first would systematically compare a larger set of morphologies with controlled geometric characteristics, such as different bipedal layouts or asymmetric bodies. The second would co-evolve the controller and morphology, allowing body design and control strategy to adapt jointly.
+
+A systematic comparison across many morphologies could identify which body characteristics influence NcHL performance. Properties such as symmetry, contact area, limb arrangement, and actuator placement could be varied while keeping material and actuator budgets constant. This would help explain which specific features cause the observed morphology dependence.
+
+Controller--morphology co-evolution would test whether evolving the body design alongside the controller can free NcHL from the task-specific limitations imposed by fixed morphologies.
+

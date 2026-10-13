@@ -1,0 +1,107 @@
+\chapter{Background}
+\label{cha:background}
+
+\section{EvoGym}
+
+Evolution Gym, usually shortened to EvoGym, is a benchmark for the joint optimization of the design and control of two-dimensional soft robots~\cite{bhatia2021evolution}. It provides a common representation for robot bodies and a collection of environments in which those bodies can be controlled. Its simulator models voxel-based objects using an underlying mass--spring system, advances their physical state over discrete timesteps, and exposes the resulting control problem through a Gym-compatible interface.
+
+An EvoGym interaction follows the usual agent--environment loop. At timestep $t$, the environment provides an observation $\mathbf{o}_t$. The controller maps it to an action $\mathbf{u}_t$, which specifies a deformation scale for each of the robot's actuators. After simulating the action, the environment returns a new observation, a scalar reward $r_t$, and an indication of whether the episode has ended. The return of one episode is
+\begin{equation}
+  F = \sum_{t=0}^{T-1} r_t,
+  \label{eq:return}
+\end{equation}
+where $T$ is the episode horizon or the timestep at which the environment terminates. This return is used as fitness by the evolutionary optimizer~\cite{bhatia2021evolution}.
+
+EvoGym is useful for this project because it separates three objects that need to remain conceptually distinct: morphology, task, and controller. Holding two of these objects fixed facilitates the study of the third.
+
+\subsection{Morphologies}
+
+An EvoGym morphology is a rectangular matrix of integer material codes. Each non-empty matrix cell represents one square voxel. Adjacent occupied cells are connected in the physical simulation, so the matrix specifies both the material distribution and the geometry of the robot. A valid robot body must form one connected structure and must contain at least one actuator~\cite{bhatia2021evolution}.
+
+Table~\ref{tab:voxel-types} lists the material codes used by the morphologies in this thesis. Rigid voxels resist deformation and provide structural support. Soft voxels deform passively in response to forces. Horizontal and vertical actuators actively expand or contract along their named axis~\cite{bhatia2021evolution}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{EvoGym voxel codes used to describe robot morphologies.}
+  \label{tab:voxel-types}
+  \begin{tabularx}{0.9\textwidth}{@{}clX@{}}
+    \toprule
+    Code & Type & Role in a morphology \\
+    \midrule
+    0 & Empty & No robot material is placed in the cell. \\
+    1 & Rigid & Provides an occupied, non-deformable structural element. \\
+    2 & Soft & Deforms passively under internal and external forces. \\
+    3 & Horizontal actuator & Changes its preferred width in response to a control signal. \\
+    4 & Vertical actuator & Changes its preferred height in response to a control signal. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The number of actuators determines the size of the controller's output, while the number and arrangement of voxels affect the observation and the physical consequences of each action.
+
+\subsection{Tasks}
+
+In EvoGym, a task defines the terrain and other simulated objects, the initial placement of the robot, the observations available to the controller, the admissible actuator commands, the reward calculated after each transition, and the conditions that terminate an episode.
+
+Observations contain task-specific information about the robot and the surrounding world. Typical robot information includes velocities and the positions of voxel corner masses relative to the robot's centre of mass. Environments that contain a movable object or a target can add relative positions, object velocities, or other quantities required to make progress observable. The observation is presented to the controller as a numerical vector and the controller is not given a symbolic description of the task.
+
+The action vector contains one command for every actuator voxel in the morphology. A command changes the actuator's target length, causing expansion or contraction. Useful motion must emerge from the timing of these local deformations, the passive response of the body, and contact with the environment. Rigid and passive soft voxels do not receive commands.
+
+Reward gives numerical feedback about progress. Its definition is part of the task: it may value displacement, object motion, height, reaching a target, or a combination of several terms. Consequently, return is meaningful within a task but is not a universal unit of performance. A return of a particular magnitude in one EvoGym environment cannot be interpreted as better than the same number in another environment without an explicit normalization~\cite{bhatia2021evolution}.
+
+\section{Hebbian Learning}
+
+Hebbian learning is a concept built around manipulating synaptic weight based on the activation of the two neurons connected by that synapse. Unlike supervised backpropagation, a Hebbian update does not require a target output or the gradient of a global loss. The central idea is to use a learning rule to produce useful updates to the weights of the network based on its own current state and observations~\cite{ferigo2024nchl,ferigo2023voxelhebbian}.
+
+\subsection{ABCD Hebbian Learning Rules}
+
+A generalized ABCD rule represents four basic influences on a connection from presynaptic neuron $i$ to postsynaptic neuron $j$~\cite{ferigo2024nchl,ferigo2023voxelhebbian}:
+\begin{equation}
+  \Delta w_{ij} = \eta\left(
+    A_{ij}a_i + B_{ij}a_j + C_{ij}a_i a_j + D_{ij}
+  \right),
+  \label{eq:abcd}
+\end{equation}
+where $a_i$ and $a_j$ are the current neuron activations and $\eta$ is a learning-rate scale. The $A$ and $B$ terms depend on the presynaptic and postsynaptic activity, respectively. The $C$ term can reinforce or suppress a connection according to joint activity, while $D$ allows activation-independent changes.
+
+\subsection{Neuron-centric Hebbian Learning}
+
+Neuron-centric Hebbian Learning moves the evolved parameters from synapses to neurons~\cite{ferigo2024nchl}. In the published formulation, each neuron $k$ stores one tuple
+\begin{equation}
+  \boldsymbol{\theta}_k=(A_k,B_k,C_k,D_k,\eta_k).
+\end{equation}
+The update for a connection is assembled from the tuples belonging to its presynaptic and postsynaptic endpoints. The rule uses the mean of their learning rates:
+\begin{equation}
+  \Delta w_{ij}=\frac{\eta_i+\eta_j}{2}\left(
+    A_i a_i + B_j a_j + C_iC_j a_i a_j + D_iD_j
+  \right).
+  \label{eq:nchl-published}
+\end{equation}
+
+\section{Evolution}
+
+Evolutionary computation searches over a population of candidate solutions using fitness evaluation, selection, and variation, without requiring gradient information~\cite{eiben2015evolutionary}. This is useful in EvoGym because fitness depends on a simulated trajectory containing contacts, deformation, and many successive controller decisions. It is also useful for plastic controllers: evolution can optimize the coefficients of a learning rule using only the fitness of the individual.
+
+In the terminology used here, a \emph{genome} is the numerical vector inherited and modified by the optimizer, an \emph{individual} is one candidate genome, and a \emph{population} is the set of candidates evaluated in a generation. The meaning of a gene depends on the controller representation. A static genome stores connection weights. An \nchl{} genome stores neuron-level learning-rule coefficients. In both cases, EvoGym episode return supplies the fitness used to rank candidates.
+
+\subsection{Genetic Algorithms}
+
+A Genetic Algorithm (GA) is a population-based evolutionary algorithm built around repeated evaluation, selection, and variation. An initial population is generated, every individual is assigned a fitness, and better-performing individuals are given a greater role in producing the next generation. Variation operators such as mutation and crossover create new genomes from the selected parents. The cycle continues until an evaluation budget or another stopping condition is reached.
+
+Selection makes the search exploit information already discovered, while variation explores nearby or recombined solutions. Mutation changes genes stochastically; crossover combines material from multiple parents. Elitism may copy one or more strong individuals unchanged so that an already discovered solution is not lost through random variation.
+
+These components describe a large family of mathematical algorithms which can work in discrete or continuous domains. Specific evolutionary optimizers choose different representations, selection rules, and variation distributions~\cite{eiben2015evolutionary}.
+
+\subsection{ES1}
+
+ES1 is the chosen strategy; it uses the arithmetic mean of the best $\mu$ genomes. If $\mathbf{g}_1,\ldots,\mathbf{g}_\mu$ are the selected parents, their centre is
+\begin{equation}
+  \bar{\mathbf{g}}=\frac{1}{\mu}\sum_{i=1}^{\mu}\mathbf{g}_i.
+\end{equation}
+Each new candidate is sampled by adding isotropic Gaussian noise,
+\begin{equation}
+  \mathbf{g}'=\bar{\mathbf{g}}+\sigma\boldsymbol{\epsilon},
+  \qquad \boldsymbol{\epsilon}\sim\mathcal{N}(\mathbf{0},I),
+  \label{eq:es1}
+\end{equation}
+where $\sigma$ controls the mutation scale. The best genome encountered so far is retained unchanged through elitism. Unlike a GA with crossover, ES1 does not preserve and recombine discrete parent genomes. It summarizes the selected set by its mean and explores a neighbourhood around that point.

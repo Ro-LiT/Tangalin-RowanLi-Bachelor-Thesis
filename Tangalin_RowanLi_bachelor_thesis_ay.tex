@@ -1,0 +1,101 @@
+% Main document for the thesis. Compile from this directory.
+\documentclass[a4paper,11pt,titlepage,twoside,openany]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\graphicspath{{./figures/}}
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0.25em}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+\singlespacing
+\emergencystretch=2em
+
+\newcommand{\thesistitle}{Evolving Neuron-Centric Hebbian Learning for Soft-Robot Control}
+\newcommand{\thesissubtitle}{Performance, robustness, and task-dependent adaptation in EvoGym}
+\newcommand{\thesisauthor}{Rowan Li Tangalin}
+\newcommand{\degreeprogramme}{Computer, Communications and Electronic Engineering}
+\newcommand{\supervisorname}{Giovanni Iacca}
+\newcommand{\academicyear}{2026/2027}
+
+\newcommand{\nchl}{NcHL}
+\newcommand{\staticcontroller}{Static-ES}
+\newcommand{\nchlcontroller}{NcHL-ES}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% EvoGym's standard voxel colours: rigid, soft, horizontal actuator, vertical actuator.
+\definecolor{evorigid}{RGB}{38,38,38}
+\definecolor{evosoft}{RGB}{191,191,191}
+\definecolor{evohact}{RGB}{242,142,43}
+\definecolor{evovact}{RGB}{56,119,222}
+\newcommand{\voxelbox}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.3pt}%
+  \fcolorbox{black!55}{#1}{\rule{0pt}{4.3mm}\rule{4.3mm}{0pt}}%
+  \endgroup}
+\newcommand{\emptyvoxel}{\makebox[4.9mm][c]{\rule{0pt}{4.9mm}}}
+\newcommand{\rigidvoxel}{\voxelbox{evorigid}}
+\newcommand{\softvoxel}{\voxelbox{evosoft}}
+\newcommand{\hactvoxel}{\voxelbox{evohact}}
+\newcommand{\vactvoxel}{\voxelbox{evovact}}
+\newcommand{\voxellegend}{%
+  \small
+  \rigidvoxel\ Rigid\quad
+  \softvoxel\ Soft\quad
+  \hactvoxel\ Horizontal actuator\quad
+  \vactvoxel\ Vertical actuator}
+\begin{document}
+\pagenumbering{gobble}
+\input{front}
+\clearpage
+\input{acknowledgements}
+\clearpage
+\pagestyle{plain}
+\mainmatter
+\tableofcontents
+\clearpage
+
+\begingroup
+  \renewcommand{\cleardoublepage}{}
+  \renewcommand{\clearpage}{}
+  \titleformat{\chapter}
+    {\normalfont\Huge\bfseries}{\thechapter}{1em}{}
+  \titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
+  \titlespacing*{\section}{0pt}{0.20in}{0.02in}
+  \titlespacing*{\subsection}{0pt}{0.10in}{0.02in}
+
+  \input{ai_declaration}\par
+  \input{abstract}\par
+  \input{chapter1}\par
+  \input{background}\par
+  \input{chapter2}\par
+  \input{chapter3}\par
+  \input{chapter4}\par
+\endgroup
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}

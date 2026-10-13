@@ -1,0 +1,36 @@
+\chapter{Introduction}
+\label{cha:introduction}
+
+Soft robots exploit deformable bodies to interact with environments in ways that are difficult for rigid mechanisms. Their compliance can support safe contact and adaptation to irregular terrain, but it also couples sensing, control, and body dynamics tightly~\cite{rus2015softrobots}. An autonomous soft robot is therefore useful only while the relationship between its sensors, controller, morphology, and environment remains suitable for the task.
+
+However, conventional optimization usually produces controller parameters that remain fixed after training. The controller may generate different actions for different observations, but the mechanism that maps observations to actions cannot itself adapt during deployment. This is a restrictive assumption when the robot encounters changes that were absent from training, and it is especially relevant for soft bodies whose physical response is difficult to model precisely. Evolved plastic neural controllers address this problem by separating two processes: evolution searches across generations for a learning rule, and that rule modifies network weights during the lifetime of an individual~\cite{soltoggio2018borntolearn}.
+
+\section{Research Questions and Contributions}
+
+This thesis investigates Neuron-centric Hebbian Learning (\nchl), which reduces the number of evolved plasticity parameters by associating them with neurons rather than individual synapses~\cite{ferigo2024nchl}. It compares an evolved \nchl{} controller with a static neural controller while holding the morphology, observations, action mapping, network topology, evolutionary optimizer, and task horizon fixed within each experimental condition. The investigation is organized around four research questions.
+
+\paragraph{RQ1 --- Evolutionary training dynamics.}
+How does the best-so-far fitness of \nchlcontroller{} develop during evolution relative to Static-ES across the original task--morphology conditions?
+
+\paragraph{RQ2 --- Robustness to initialization.}
+Does an evolved \nchl{} rule remain effective when the concrete neural-network weights are initialized with random seeds not encountered during evolution?
+
+\paragraph{RQ3 --- Within-lifetime learning.}
+Do the weight updates produced by \nchl{} create behaviourally useful weights, as opposed to weight change without a corresponding performance benefit?
+
+\paragraph{RQ4 --- Task and morphology dependence.}
+Which task characteristics are associated with good \nchl{} performance, and are those patterns independent of morphology?
+
+
+The thesis makes three principal contributions:
+\begin{enumerate}
+  \item A controlled comparison of \nchlcontroller{} and Static-ES on the original EvoGym task and morphology suite, including evolutionary training dynamics and qualitative inspection of the evolved behaviour;
+  \item Two mechanistic evaluations of the learned plasticity rules, testing sensitivity to unseen initial weights and whether weights acquired during a lifetime remain useful when frozen and replayed;
+  \item An extension to twelve tasks and three controlled morphologies, combining task-group analysis, task--morphology comparisons, and controller footage to investigate whether \nchl{} performance follows task characteristics or body geometry.
+\end{enumerate}
+
+The study validates these contributions with ten independent evolutionary runs per condition, generation-level fitness curves, evaluations across unseen initializations, freeze-and-replay interventions, standardized comparisons across task-specific reward scales, and qualitative footage analysis. The results show that \nchl{} can produce meaningful locomotion and object-interaction behaviour, and that its online updates often improve on random initial weights. They also show sensitivity to initialization, no consistent task-class advantage, and a substantially clear dependence on morphology.
+
+\section{Thesis Outline}
+
+\Cref{cha:background} introduces EvoGym, Hebbian learning, \nchl{}, and the evolutionary optimizer used in the experiments. \Cref{cha:original-study} presents the original study and answers RQ1--RQ3 through its methodology and results. \Cref{cha:extended} extends the comparison across tasks and controlled morphologies and answers RQ4. \Cref{cha:discussion} summarizes the conclusions, limitations, and directions for future work.

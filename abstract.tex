@@ -1,0 +1,12 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Soft robotics refers to the study of robotic systems that exploit deformable bodies in order to interact with complex environments. The same characteristics which enable these capabilities also make the systems more difficult to control. Additionally, certain applications of soft robotics, such as search-and-rescue in unstructured terrain, may benefit from the ability to adapt and learn during the lifetime of the robot in order to face unforeseen changes or simply optimize their behavior.
+
+Biological systems achieve adaptability in part through synaptic plasticity, where the connections between neurons change according to their activity. Hebbian Learning provides a simple model of this principle by modifying neural-network weights online according to the activation of connected neurons. 
+
+Conventional Hebbian formulations associate plasticity parameters with individual synapses, causing the number of parameters to grow with the number of connections. Neuron-centric Hebbian Learning (NcHL) addresses this scaling problem by associating the parameters governing plasticity with the neurons instead, substantially reducing the dimensionality of the learning rule while preserving activity-dependent adaptation.
+
+This project investigates whether NcHL can provide competitive and adaptive control for soft robots. In particular, we compare NcHL-based controllers with static neural controllers across different tasks and morphologies, examine the robustness of evolved NcHL rules to unseen neural-network initializations, and investigate whether NcHL produces meaningful learning within an individual lifetime.
+
+The second, larger experiment extends the controller comparison to twelve tasks and three controlled morphologies. Tasks are grouped in advance by dominant control demand---continuous-support locomotion, terrain negotiation, object interaction, and whole-body dynamic control---so that the analysis can test whether the relative performance of \nchl{} follows an interpretable task-level pattern.
